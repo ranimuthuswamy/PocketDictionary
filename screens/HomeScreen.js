@@ -15,24 +15,60 @@ export default class HomeScreen extends React.Component {
         }
     }
 
-    getWord = (word) => {
-        var url = "https://whitehat-dictionary-glitch.me/?word=" + word;
-        return fetch(url)
-            .then((data) => {
-                return data.json()
-            })
-            .then((response) => {
-                var responseObject = JSON.parse(response);
-                var word = responseObject.word;
-                var lexicalCategory = responseObject.results[0].lexicalEntries[0].lexicalCategory.text;
-                var defination = responseObject.results[0].lexicalEntries[0].senses[0].definitions[0];
+    getWord = (word) => {        
+        //var url = "https://whitehat-dictionary-glitch.me/?word=" + word;
+        // return fetch(url)
+        //     .then((data) => {
+        //         return data.json()
+        //     })
+        //     .then((response) => {
+        //         var responseObject = JSON.parse(response);
+        //         var word = responseObject.word;
+        //         var lexicalCategory = responseObject.results[0].lexicalEntries[0].lexicalCategory.text;
+        //         var defination = responseObject.results[0].lexicalEntries[0].senses[0].definitions[0];
 
-                this.setState({
-                    "word": word.trim(),
-                    "lexicalCategory": lexicalCategory === undefined ? "" : lexicalCategory.trim(),
-                    "defination": defination === undefined ? "" : defination.trim()
-                });
-            })
+        //         this.setState({
+        //             "word": word.trim(),
+        //             "lexicalCategory": lexicalCategory === undefined ? "" : lexicalCategory.trim(),
+        //             "defination": defination === undefined ? "" : defination.trim()
+        //         });
+        //     })
+        var searchKeyword = word.toLowerCase();
+        var url = "https://rupinwhitehatjr.github.io/dictionary/"+searchKeyword+".json";
+        console.log(url);
+        //console.log(url)
+        return fetch(url)
+        .then((data)=>{
+          if(data.status===200)
+          {
+            return data.json()
+          }
+          else
+          {
+            return null
+          }
+        })
+        .then((response)=>{
+            var responseObject = response;          
+            if(responseObject)
+            {
+              var wordData = responseObject.definitions[0]              
+              var definition=wordData.description
+              var lexicalCategory=wordData.wordtype              
+              this.setState({
+                "word" : this.state.text, 
+                "defination" :definition,
+                "lexicalCategory": lexicalCategory   
+              });
+            }
+            else
+            {
+              this.setState({
+                "word" : this.state.text, 
+                "defination" :"Not Found",                
+              });    
+            }        
+        });        
     }
 
     render() {
